@@ -16,35 +16,16 @@ const bot = new Telegraf(botToken);
 const postController = new PostController();
 const socialMediaService = new SocialMediaService();
 
-bot.start((ctx) => ctx.reply('Welcome! Send me some text or an image to share on social media.'));
+bot.start((ctx) => ctx.reply('Welcome! Send me some text to share on social media.'));
 
 bot.on('text', (ctx) => {
     const userInput = ctx.message.text;
     const processedData = postController.handleTextInput(userInput);
     const shareLinks = socialMediaService.generateShareLinks(processedData);
-    ctx.reply('Share your post:', {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: 'Share on Telegram', url: shareLinks.telegramLink }],
-                [{ text: 'Share on Twitter', url: shareLinks.twitterLink }],
-            ],
-        },
-    });
+    ctx.reply(`Here are your share links: ${shareLinks.join(', ')}`);
 });
 
-bot.on('photo', async (ctx) => {
-    const fileId = ctx.message.photo[ctx.message.photo.length - 1].file_id;
-    const processedData = await postController.handleImageInput(fileId);
-    const shareLinks = socialMediaService.generateShareLinks('', processedData);
-    ctx.reply('Share your post:', {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: 'Share on Telegram', url: shareLinks.telegramLink }],
-                [{ text: 'Share on Twitter', url: shareLinks.twitterLink }],
-            ],
-        },
-    });
-});
+// Удаляем обработку изображений и других медиафайлов
 
 bot.launch();
 console.log('Bot is running...');

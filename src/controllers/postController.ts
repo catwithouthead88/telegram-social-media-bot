@@ -2,15 +2,13 @@ import axios from 'axios';
 
 export default class PostController {
     handleTextInput(text: string) {
-        // Обработка текста
-        return text;
+        // Обработка текстового ввода
+        return { type: 'text', content: text };
     }
 
-    async handleImageInput(fileId: string): Promise<string> {
-        // Получение URL файла
-        const fileUrl = await this.getFileUrl(fileId);
+    handleImageInput(imageUrl: string) {
         // Обработка изображения
-        return fileUrl;
+        return { type: 'image', content: imageUrl };
     }
 
     private async getFileUrl(fileId: string): Promise<string> {
