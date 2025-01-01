@@ -1,0 +1,32 @@
+{
+  "name": "telegram-social-media-bot",
+  "version": "1.0.0",
+  "description": "A Telegram bot that simplifies posting to social media by allowing users to input text and images, and generates share buttons for Telegram and Twitter.",
+  "main": "src/bot.ts",
+  "scripts": {
+    "start": "ts-node src/bot.ts",
+    "build": "tsc",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "axios": "^0.21.4",
+    "dotenv": "^16.4.7",
+    "imgbb-uploader": "^1.5.1",
+    "node-telegram-bot-api": "^0.50.0",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^16.18.122",
+    "@types/node-telegram-bot-api": "^0.50.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.9.5"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "social media",
+    "posting"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
