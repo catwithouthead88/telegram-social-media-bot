@@ -26,10 +26,9 @@ bot.on('text', (ctx) => {
     ctx.reply(
         'Here are your share buttons:',
         Markup.inlineKeyboard([
-            Markup.button.url('Share on Twitter', shareLinks[0]),
-            Markup.button.url('Share on Telegram', shareLinks[1]),
-            Markup.button.url('Share on Instagram', shareLinks[2]),
-            Markup.button.url('Share on Threads', shareLinks[3])
+            [Markup.button.url('Twitter', shareLinks[0]), Markup.button.url('Telegram', shareLinks[1])],
+            [Markup.button.url('Instagram', shareLinks[2]), Markup.button.url('Threads', shareLinks[3])],
+            [Markup.button.url('TikTok', shareLinks[4]), Markup.button.url('YouTube', shareLinks[5])]
         ])
     );
 });
