@@ -1,6 +1,6 @@
-import { Telegraf } from 'telegraf';
+import { Telegraf, Markup } from 'telegraf';
 import PostController from './controllers/postController';
-import SocialMediaService from './services/socialMediaService'; // Corrected import statement
+import SocialMediaService from './services/socialMediaService';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // Загружает переменные окружения из файла .env
@@ -22,10 +22,15 @@ bot.on('text', (ctx) => {
     const userInput = ctx.message.text;
     const processedData = postController.handleTextInput(userInput);
     const shareLinks = socialMediaService.generateShareLinks(processedData);
-    ctx.reply(`Here are your share links: ${shareLinks.join(', ')}`);
-});
 
-// Удаляем обработку изображений и других медиафайлов
+    ctx.reply(
+        'Here are your share buttons:',
+        Markup.inlineKeyboard([
+            Markup.button.url('Share on Twitter', shareLinks[0]),
+            Markup.button.url('Share on Telegram', shareLinks[1])
+        ])
+    );
+});
 
 bot.launch();
 console.log('Bot is running...');
