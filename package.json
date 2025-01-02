@@ -4,7 +4,7 @@
   "description": "A Telegram bot that simplifies posting to social media by allowing users to input text and images, and generates share buttons for Telegram and Twitter.",
   "main": "src/bot.ts",
   "scripts": {
-    "start": "ts-node src/bot.ts",
+    "start": "tsc && ts-node src/bot.ts",
     "build": "tsc",
     "test": "echo \"No tests specified\" && exit 0"
   },
