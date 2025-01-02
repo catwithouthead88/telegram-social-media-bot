@@ -22,7 +22,7 @@ bot.start((ctx) => ctx.reply('Welcome! Send me some text to share on social medi
 
 bot.command('miniapp', (ctx) => {
     ctx.reply('Open the mini-app:', Markup.inlineKeyboard([
-        Markup.button.webApp('Open Mini-App', 'https://300e-89-110-76-48.ngrok-free.app') // Замените на ваш публичный URL
+        Markup.button.webApp('Open Mini-App', 'https://0d6e-89-110-76-48.ngrok-free.app') // Замените на ваш публичный URL
     ]));
 });
 
