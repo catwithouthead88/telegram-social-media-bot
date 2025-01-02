@@ -18,6 +18,12 @@ const socialMediaService = new SocialMediaService();
 
 bot.start((ctx) => ctx.reply('Welcome! Send me some text to share on social media.'));
 
+bot.command('miniapp', (ctx) => {
+    ctx.reply('Open the mini-app:', Markup.inlineKeyboard([
+        Markup.button.url('Open Mini-App', 'http://10.8.0.153:8080/index.html')
+    ]));
+});
+
 bot.on('text', (ctx) => {
     const userInput = ctx.message.text;
     const processedData = postController.handleTextInput(userInput);
@@ -30,7 +36,7 @@ bot.on('text', (ctx) => {
         threads: 'https://www.threads.net',
         tiktok: 'https://www.tiktok.com/tiktokstudio/upload?from=upload',
         youtube: 'https://studio.youtube.com/channel/UCMeSLjGQPTrez-MaYKh0qFA',
-        pinterest: `https://www.pinterest.com/pin-creation-tool/`
+        pinterest: `https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(userInput)}`
     };
 
     ctx.reply(

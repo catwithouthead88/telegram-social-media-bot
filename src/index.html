@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Poster</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .social-media {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .social-media input {
+            margin-right: 10px;
+        }
+        .post-content {
+            margin-bottom: 20px;
+        }
+        .post-content textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .post-content input[type="file"] {
+            margin-top: 10px;
+        }
+        .submit-btn {
+            display: flex;
+            justify-content: center;
+        }
+        .submit-btn button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Social Media Poster</h1>
+        <div class="social-media">
+            <label>
+                <input type="checkbox" id="twitter" name="social-media" value="twitter">
+                Twitter
+            </label>
+        </div>
+        <div class="post-content">
+            <textarea id="post-text" placeholder="Enter your post text here..."></textarea>
+            <input type="file" id="post-image" accept="image/*">
+        </div>
+        <div class="submit-btn">
+            <button onclick="submitPost()">Submit</button>
+        </div>
+    </div>
+    <script>
+        function submitPost() {
+            const twitter = document.getElementById('twitter').checked;
+            const postText = document.getElementById('post-text').value;
+            const postImage = document.getElementById('post-image').files[0];
+
+            if (twitter) {
+                const twitterWindow = window.open('https://twitter.com/intent/tweet', 'twitter', 'width=600,height=400');
+                twitterWindow.onload = function() {
+                    twitterWindow.document.getElementById('status').value = postText;
+                    if (postImage) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const image = e.target.result;
+                            twitterWindow.document.getElementById('media').value = image;
+                        };
+                        reader.readAsDataURL(postImage);
+                    }
+                };
+            }
+        }
+    </script>
+</body>
+</html>
