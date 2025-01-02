@@ -11,7 +11,7 @@
         <div class="header">
             <h1>Social Media Poster</h1>
             <div class="social-media">
-                <button id="twitter" onclick="toggleSelection('twitter')">Twitter</button>
+                <button id="twitter" onclick="loginWithTwitter()">Twitter</button>
             </div>
         </div>
         <div class="continue-btn">
@@ -28,12 +28,56 @@
             <button onclick="submitPost()">Submit</button>
         </div>
     </div>
+    <div class="container hidden" id="loginPage">
+        <h1>Login to Twitter</h1>
+        <iframe id="twitterLoginIframe" src="https://twitter.com/login" width="100%" height="400px"></iframe>
+        <div class="continue-btn">
+            <button onclick="saveCookies()">Save Cookies</button>
+        </div>
+    </div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        function toggleSelection(id) {
-            const button = document.getElementById(id);
-            button.classList.toggle('selected');
+        async function checkLogin() {
+            const response = await fetch('/check-login');
+            if (response.ok) {
+                const { loggedIn } = await response.json();
+                if (loggedIn) {
+                    document.getElementById('page1').classList.add('hidden');
+                    document.getElementById('page2').classList.remove('hidden');
+                }
+            }
         }
+
+        function loginWithTwitter() {
+            document.getElementById('page1').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+        }
+
+        function saveCookies() {
+            const iframe = document.getElementById('twitterLoginIframe').contentWindow;
+            iframe.postMessage('getCookies', '*');
+        }
+
+        window.addEventListener('message', function(event) {
+            if (event.origin === 'https://twitter.com') {
+                const cookies = event.data;
+                fetch('/save-cookies', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ cookies })
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Logged in successfully!');
+                        document.getElementById('loginPage').classList.add('hidden');
+                        document.getElementById('page2').classList.remove('hidden');
+                    } else {
+                        alert('Failed to save cookies.');
+                    }
+                });
+            }
+        });
 
         function showPostContent() {
             document.getElementById('page1').classList.add('hidden');
@@ -62,6 +106,7 @@
         }
 
         Telegram.WebApp.ready();
+        checkLogin();
     </script>
 </body>
 </html>
