@@ -12,8 +12,6 @@
             <h1>Social Media Poster</h1>
             <div class="social-media">
                 <button id="twitter" onclick="toggleSelection('twitter')">Twitter</button>
-                <button id="telegram" onclick="toggleSelection('telegram')">Telegram</button>
-                <button id="instagram" onclick="toggleSelection('instagram')">Instagram</button>
             </div>
         </div>
         <div class="continue-btn">
@@ -44,8 +42,6 @@
 
         function submitPost() {
             const twitter = document.getElementById('twitter').classList.contains('selected');
-            const telegram = document.getElementById('telegram').classList.contains('selected');
-            const instagram = document.getElementById('instagram').classList.contains('selected');
             const postText = document.getElementById('post-text').value;
             const postImage = document.getElementById('post-image').files[0];
 
@@ -62,14 +58,6 @@
                         reader.readAsDataURL(postImage);
                     }
                 };
-            }
-
-            if (telegram) {
-                const telegramWindow = window.open(`https://t.me/share/url?url=${encodeURIComponent(postText)}`, 'telegram', 'width=600,height=400');
-            }
-
-            if (instagram) {
-                alert('Instagram sharing is not supported yet.');
             }
         }
 
