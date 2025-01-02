@@ -8,6 +8,7 @@ export default class SocialMediaService {
             links.push(`https://www.threads.net`); // Ссылка на Threads
             links.push(`https://www.tiktok.com/tiktokstudio/upload?from=upload`); // Ссылка на TikTok
             links.push(`https://studio.youtube.com/channel/UCMeSLjGQPTrez-MaYKh0qFA`); // Ссылка на YouTube
+            links.push(`https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(data.content)}`); // Ссылка на Pinterest
         }
         return links;
     }
