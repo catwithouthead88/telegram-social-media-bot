@@ -76,7 +76,10 @@
             <button onclick="submitPost()">Submit</button>
         </div>
     </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        Telegram.WebApp.ready();
+
         function submitPost() {
             const twitter = document.getElementById('twitter').checked;
             const postText = document.getElementById('post-text').value;
