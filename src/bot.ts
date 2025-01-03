@@ -2,6 +2,9 @@ import { Telegraf, Markup, Context } from 'telegraf';
 import PostController from './controllers/postController';
 import SocialMediaService from './services/socialMediaService';
 import * as dotenv from 'dotenv';
+import { exec } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
 
 dotenv.config(); // Загружает переменные окружения из файла .env
 
@@ -51,7 +54,8 @@ bot.on('text', (ctx) => {
                 [Markup.button.url('Twitter', dynamicShareLinks.twitter), Markup.button.url('Telegram', dynamicShareLinks.telegram)],
                 [Markup.button.url('Instagram', dynamicShareLinks.instagram), Markup.button.url('Threads', dynamicShareLinks.threads)],
                 [Markup.button.url('TikTok', dynamicShareLinks.tiktok), Markup.button.url('YouTube', dynamicShareLinks.youtube)],
-                [Markup.button.url('Pinterest', dynamicShareLinks.pinterest), Markup.button.url('Reddit', dynamicShareLinks.reddit)]
+                [Markup.button.url('Pinterest', dynamicShareLinks.pinterest), Markup.button.url('Reddit', dynamicShareLinks.reddit)],
+                [Markup.button.callback('Send Tweet', 'send_tweet')]
             ])
         );
     } else {
@@ -102,9 +106,45 @@ bot.action('skip_check', (ctx) => {
             [Markup.button.url('Twitter', dynamicShareLinks.twitter), Markup.button.url('Telegram', dynamicShareLinks.telegram)],
             [Markup.button.url('Instagram', dynamicShareLinks.instagram), Markup.button.url('Threads', dynamicShareLinks.threads)],
             [Markup.button.url('TikTok', dynamicShareLinks.tiktok), Markup.button.url('YouTube', dynamicShareLinks.youtube)],
-            [Markup.button.url('Pinterest', dynamicShareLinks.pinterest), Markup.button.url('Reddit', dynamicShareLinks.reddit)]
+            [Markup.button.url('Pinterest', dynamicShareLinks.pinterest), Markup.button.url('Reddit', dynamicShareLinks.reddit)],
+            [Markup.button.callback('Send Tweet', 'send_tweet')]
         ])
     );
+});
+
+bot.action('send_tweet', (ctx) => {
+    exec(`python twikit_client.py "${userInputText}"`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error: ${error.message}`);
+            ctx.reply('There was an error sending the tweet.');
+            return;
+        }
+        if (stderr) {
+            console.error(`stderr: ${stderr}`);
+            ctx.reply('There was an error sending the tweet.');
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+        ctx.reply('Tweet sent successfully!');
+    });
+});
+
+bot.command('tweet', (ctx) => {
+    const text = ctx.message.text.replace('/tweet ', '');
+    exec(`python twikit_client.py "${text}"`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error: ${error.message}`);
+            ctx.reply('There was an error sending the tweet.');
+            return;
+        }
+        if (stderr) {
+            console.error(`stderr: ${stderr}`);
+            ctx.reply('There was an error sending the tweet.');
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+        ctx.reply('Tweet sent successfully!');
+    });
 });
 
 bot.launch();
