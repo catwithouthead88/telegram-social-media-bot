@@ -17,6 +17,8 @@ const postController = new PostController();
 const socialMediaService = new SocialMediaService();
 
 let dynamicShareLinks: { [key: string]: string } = {};
+let userInputText: string = '';
+let awaitingCorrection: boolean = false;
 
 bot.start((ctx) => ctx.reply('Welcome! Send me some text to share on social media.'));
 
@@ -27,56 +29,82 @@ bot.command('miniapp', (ctx) => {
 });
 
 bot.on('text', (ctx) => {
-    const userInput = ctx.message.text;
-    const processedData = postController.handleTextInput(userInput);
-    const shareLinks = socialMediaService.generateShareLinks(processedData);
+    if (awaitingCorrection) {
+        const correctedText = ctx.message.text;
+        awaitingCorrection = false;
+        userInputText = correctedText;
 
+        dynamicShareLinks = {
+            twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(userInputText)}`,
+            telegram: `https://t.me/share/url?url=${encodeURIComponent(userInputText)}`,
+            instagram: 'https://www.instagram.com',
+            threads: 'https://www.threads.net',
+            tiktok: 'https://www.tiktok.com/tiktokstudio/upload?from=upload',
+            youtube: 'https://studio.youtube.com/channel/UCMeSLjGQPTrez-MaYKh0qFA',
+            pinterest: `https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(userInputText)}`,
+            reddit: `https://www.reddit.com/submit?url=${encodeURIComponent(userInputText)}`
+        };
+
+        ctx.reply(
+            'Here are your share buttons:',
+            Markup.inlineKeyboard([
+                [Markup.button.url('Twitter', dynamicShareLinks.twitter), Markup.button.url('Telegram', dynamicShareLinks.telegram)],
+                [Markup.button.url('Instagram', dynamicShareLinks.instagram), Markup.button.url('Threads', dynamicShareLinks.threads)],
+                [Markup.button.url('TikTok', dynamicShareLinks.tiktok), Markup.button.url('YouTube', dynamicShareLinks.youtube)],
+                [Markup.button.url('Pinterest', dynamicShareLinks.pinterest), Markup.button.url('Reddit', dynamicShareLinks.reddit)]
+            ])
+        );
+    } else {
+        userInputText = ctx.message.text;
+        ctx.reply(
+            'Do you want to check the spelling and punctuation?',
+            Markup.inlineKeyboard([
+                Markup.button.callback('Check', 'check_text'),
+                Markup.button.callback('Skip', 'skip_check')
+            ])
+        );
+    }
+});
+
+bot.action('check_text', (ctx) => {
+    const prompt = `Check the spelling and punctuation in the following text: "${userInputText}"`;
+    const chatGptUrl = `https://chat.openai.com/?prompt=${encodeURIComponent(prompt)}`;
+    awaitingCorrection = true;
+    ctx.reply(
+        'Please check the spelling and punctuation using ChatGPT:',
+        Markup.inlineKeyboard([
+            Markup.button.url('Open ChatGPT', chatGptUrl),
+            Markup.button.callback('Send corrected text', 'send_corrected_text')
+        ])
+    );
+    ctx.reply('After checking, please send the corrected text back to me.');
+});
+
+bot.action('send_corrected_text', (ctx) => {
+    ctx.reply('Please send the corrected text.');
+});
+
+bot.action('skip_check', (ctx) => {
     dynamicShareLinks = {
-        twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(userInput)}`,
-        telegram: `https://t.me/share/url?url=${encodeURIComponent(userInput)}`,
+        twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(userInputText)}`,
+        telegram: `https://t.me/share/url?url=${encodeURIComponent(userInputText)}`,
         instagram: 'https://www.instagram.com',
         threads: 'https://www.threads.net',
         tiktok: 'https://www.tiktok.com/tiktokstudio/upload?from=upload',
         youtube: 'https://studio.youtube.com/channel/UCMeSLjGQPTrez-MaYKh0qFA',
-        pinterest: `https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(userInput)}`,
-        reddit: `https://www.reddit.com/submit?url=${encodeURIComponent(userInput)}`
+        pinterest: `https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(userInputText)}`,
+        reddit: `https://www.reddit.com/submit?url=${encodeURIComponent(userInputText)}`
     };
-
-    console.log('Dynamic Share Links:', dynamicShareLinks);
 
     ctx.reply(
         'Here are your share buttons:',
         Markup.inlineKeyboard([
-            [Markup.button.callback('Twitter', 'twitter'), Markup.button.callback('Telegram', 'telegram')],
-            [Markup.button.callback('Instagram', 'instagram'), Markup.button.callback('Threads', 'threads')],
-            [Markup.button.callback('TikTok', 'tiktok'), Markup.button.callback('YouTube', 'youtube')],
-            [Markup.button.callback('Pinterest', 'pinterest'), Markup.button.callback('Reddit', 'reddit')]
+            [Markup.button.url('Twitter', dynamicShareLinks.twitter), Markup.button.url('Telegram', dynamicShareLinks.telegram)],
+            [Markup.button.url('Instagram', dynamicShareLinks.instagram), Markup.button.url('Threads', dynamicShareLinks.threads)],
+            [Markup.button.url('TikTok', dynamicShareLinks.tiktok), Markup.button.url('YouTube', dynamicShareLinks.youtube)],
+            [Markup.button.url('Pinterest', dynamicShareLinks.pinterest), Markup.button.url('Reddit', dynamicShareLinks.reddit)]
         ])
     );
-
-    // Зарегистрируем обработчик действий после инициализации dynamicShareLinks
-    bot.action(Object.keys(dynamicShareLinks), async (ctx) => {
-        console.log('Button clicked:', ctx.match[0]);
-        const platform = ctx.match[0] as keyof typeof dynamicShareLinks;
-        const link = dynamicShareLinks[platform];
-        console.log('Platform:', platform);
-        console.log('Link:', link);
-        await ctx.answerCbQuery();
-        const message = ctx.update.callback_query?.message;
-        if (message && 'reply_markup' in message && message.reply_markup) {
-            console.log('Editing message reply markup');
-            await ctx.editMessageReplyMarkup({
-                inline_keyboard: message.reply_markup.inline_keyboard.map((row: any) =>
-                    row.map((button: any) => {
-                        if (button.callback_data === platform) {
-                            return Markup.button.url(`✅ ${button.text}`, link);
-                        }
-                        return button;
-                    })
-                )
-            });
-        }
-    });
 });
 
 bot.launch();
