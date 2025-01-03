@@ -38,7 +38,8 @@ bot.on('text', (ctx) => {
         threads: 'https://www.threads.net',
         tiktok: 'https://www.tiktok.com/tiktokstudio/upload?from=upload',
         youtube: 'https://studio.youtube.com/channel/UCMeSLjGQPTrez-MaYKh0qFA',
-        pinterest: `https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(userInput)}`
+        pinterest: `https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(userInput)}`,
+        reddit: `https://www.reddit.com/submit?url=${encodeURIComponent(userInput)}`
     };
 
     console.log('Dynamic Share Links:', dynamicShareLinks);
@@ -49,7 +50,7 @@ bot.on('text', (ctx) => {
             [Markup.button.callback('Twitter', 'twitter'), Markup.button.callback('Telegram', 'telegram')],
             [Markup.button.callback('Instagram', 'instagram'), Markup.button.callback('Threads', 'threads')],
             [Markup.button.callback('TikTok', 'tiktok'), Markup.button.callback('YouTube', 'youtube')],
-            [Markup.button.callback('Pinterest', 'pinterest')]
+            [Markup.button.callback('Pinterest', 'pinterest'), Markup.button.callback('Reddit', 'reddit')]
         ])
     );
 
